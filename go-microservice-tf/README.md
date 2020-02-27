@@ -7,4 +7,4 @@ This code covers the creation of a basic Pull,Build,Deploy pipeline for a contai
 
 This code is designed to deploy the following sample microservice: [go-microservice](https://github.com/photosojourn/go-microservice).
 
-If you need a Docker image for the helm deploy an example can also be found here: [eks-helm-deploy](https://github.com/photosojourn/cicd-helm)
+If you need a Docker image for the helm deploy an example can also be found here: [cicd-helm](https://github.com/photosojourn/cicd-helm)
