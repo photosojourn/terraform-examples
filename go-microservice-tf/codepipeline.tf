@@ -118,5 +118,4 @@ resource "aws_codepipeline" "russ_codepipeline_go_microservice" {
       }
     }
   }
-
 }

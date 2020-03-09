@@ -43,6 +43,9 @@ resource "aws_iam_role_policy" "russ-codebuild-go-microservice" {
         "ecr:InitiateLayerUpload",
         "ecr:PutImage",
         "ecr:UploadLayerPart",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:DescribeImages"
       ],
       "Resource": [
         "${aws_ecr_repository.russ-go-microservice.arn}"
