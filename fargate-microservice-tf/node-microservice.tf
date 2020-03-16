@@ -19,6 +19,30 @@ resource "aws_security_group" "ecs_tasks" {
   }
 }
 
+resource "aws_iam_role" "node-microservice-exec-role" {
+  name = "node-microservice-ecs-exec-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "node-microservice-general" {
+ role = aws_iam_role.go-microservice-exec-role.name
+ policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
 
 resource "aws_ecs_task_definition" "node-microservice" {
   family                   = "node-microservice"
@@ -26,6 +50,7 @@ resource "aws_ecs_task_definition" "node-microservice" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "${var.fargate_cpu}"
   memory                   = "${var.fargate_memory}"
+  execution_role_arn       = aws_iam_role.node-microservice-exec-role.arn
 
   container_definitions = <<DEFINITION
 [
@@ -40,7 +65,15 @@ resource "aws_ecs_task_definition" "node-microservice" {
         "containerPort": ${var.app_port},
         "hostPort": ${var.app_port}
       }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "microservices",
+        "awslogs-stream-prefix": "node-microservice",
+        "awslogs-region": "${var.region}"
+      }
+    }
   }
 ]
 DEFINITION

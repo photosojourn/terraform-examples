@@ -18,6 +18,31 @@ resource "aws_security_group" "go_ecs_tasks" {
   }
 }
 
+resource "aws_iam_role" "go-microservice-exec-role" {
+  name = "go-microservice-ecs-exec-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "go-microservice-general" {
+ role = aws_iam_role.go-microservice-exec-role.name
+ policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 
 resource "aws_ecs_task_definition" "go-microservice" {
   family                   = "go-microservice"
@@ -25,6 +50,7 @@ resource "aws_ecs_task_definition" "go-microservice" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "${var.fargate_cpu}"
   memory                   = "${var.fargate_memory}"
+  execution_role_arn       = aws_iam_role.go-microservice-exec-role.arn
 
   container_definitions = <<DEFINITION
 [
@@ -33,13 +59,22 @@ resource "aws_ecs_task_definition" "go-microservice" {
     "image": "${var.go_app_image}",
     "memory": ${var.fargate_memory},
     "name": "go-microservice",
+    "executionRoleArn": "${aws_iam_role.go-microservice-exec-role.arn}",
     "networkMode": "awsvpc",
     "portMappings": [
       {
         "containerPort": ${var.app_port},
         "hostPort": ${var.app_port}
       }
-    ]
+    ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "microservices",
+            "awslogs-stream-prefix": "go-microservice",
+            "awslogs-region": "${var.region}"
+      }
+    }
   }
 ]
 DEFINITION
