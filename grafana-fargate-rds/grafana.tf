@@ -74,7 +74,7 @@ resource "aws_ecs_task_definition" "grafana" {
     "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-            "awslogs-group": "microservices",
+            "awslogs-group": "support",
             "awslogs-stream-prefix": "grafana",
             "awslogs-region": "${var.region}"
       }
