@@ -1,0 +1,17 @@
+{
+  "alb_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:elasticloadbalancing:eu-west-1:480810688838:loadbalancer/app/ecs-fargate-example/b86612a7446df4ce"
+  },
+  "ecs_cluster_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "example-ecs-cluster"
+  },
+  "vpc_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "vpc-028fbaf8a267d19ae"
+  }
+}

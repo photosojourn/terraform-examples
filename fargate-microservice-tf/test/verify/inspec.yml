@@ -1,0 +1,14 @@
+  
+name: verify
+title: InSpec Profile to verify Terraform provisioning
+maintainer: Russ Whelan
+copyright: Russ Whelan
+copyright_email: russell.whelan@gmail.com
+license: MIT license
+summary: An InSpec test profile to verify terrafrom setups
+version: 0.1.0
+depends:
+  - name: inspec-aws
+    url:  https://github.com/inspec/inspec-aws/archive/v1.21.0.tar.gz
+supports:
+  - platform: aws
