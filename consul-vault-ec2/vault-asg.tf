@@ -1,10 +1,8 @@
-/*data "aws_ssm_parameter" "aws_ami" {
-    name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-}*/
-
-
 data "template_file" "vault_userdata" {
   template = "${file("${path.cwd}/user-data/vault-userdata.tpl")}"
+  vars = {
+    key_id = aws_kms_key.vault_key.key_id
+  }
 }
 
 module "vault-asg" {
@@ -17,10 +15,11 @@ module "vault-asg" {
 
   image_id             = "ami-08fc8d0185bfae26e"
   instance_type        = "t2.micro"
-  security_groups      = [aws_security_group.consul.id]
+  security_groups      = [aws_security_group.vault.id,aws_security_group.consul.id]
   iam_instance_profile = aws_iam_instance_profile.vault_instance_profile.arn
-  user_data            = data.template_file.vault_userdata.template
+  user_data            = data.template_file.vault_userdata.rendered
   key_name             = "russ-aws-sandbox"
+  target_group_arns    = [aws_alb_target_group.vault.arn]
 
   root_block_device = [
     {
@@ -33,7 +32,7 @@ module "vault-asg" {
   asg_name                  = "vault-asg"
   vpc_zone_identifier       = module.vpc.private_subnets
   health_check_type         = "EC2"
-  min_size                  = 0
+  min_size                  = 3
   max_size                  = 3
   desired_capacity          = 3
   wait_for_capacity_timeout = 0
@@ -59,9 +58,9 @@ resource "aws_security_group" "vault" {
 
   ingress {
     protocol    = "tcp"
-    from_port   = "80"
-    to_port     = "80"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = "8200"
+    to_port     = "8200"
+    security_groups = [aws_security_group.vault_lb.id]
   }
 
   egress {

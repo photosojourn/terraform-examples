@@ -35,7 +35,7 @@ cat << EOF > /tmp/playbook.yml
     vault_plugin_path: /opt/vault/plugins
     vault_data_path: /opt/vault/data
     vault_awskms: true
-    vault_awskms_key_id: a184ee4b-2863-45fe-bec2-3ed639bd4525
+    vault_awskms_key_id: ${key_id}
 
   roles:
     - consul_role
