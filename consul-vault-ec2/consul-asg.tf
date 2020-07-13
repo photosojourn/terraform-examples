@@ -21,6 +21,7 @@ module "asg" {
   iam_instance_profile = aws_iam_instance_profile.consul_instance_profile.arn
   user_data            = data.template_file.consul_userdata.template
   key_name             = "russ-aws-sandbox"
+  target_group_arns    = [aws_alb_target_group.consul.arn]
 
   root_block_device = [
     {

@@ -27,6 +27,7 @@ cat << EOF > /tmp/playbook.yml
      - provider=aws tag_key=Consul tag_value=true
     consul_server: true
     consul_server_count: 3
+    consul_ui: true
   roles:
     - consul_role
 EOF

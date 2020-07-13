@@ -12,6 +12,13 @@ resource "aws_security_group" "vault_lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    protocol    = "tcp"
+    from_port   = 8500
+    to_port     = 8500
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port = 0
     to_port   = 0
@@ -38,8 +45,19 @@ resource "aws_alb_target_group" "vault" {
   }
 }
 
-# Set a fixed response for the root i.e 404
-resource "aws_alb_listener" "front_end" {
+resource "aws_alb_target_group" "consul" {
+  name        = "consul-ui"
+  port        = 8500
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
+
+  health_check {
+    path = "/ui/"
+    matcher = "200"
+  }
+}
+
+resource "aws_alb_listener" "vault_front_end" {
   load_balancer_arn = aws_alb.main.id
   port              = "8200"
   protocol          = "HTTP"
@@ -47,5 +65,16 @@ resource "aws_alb_listener" "front_end" {
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.vault.arn
+  }
+}
+
+resource "aws_alb_listener" "consul_front_end" {
+  load_balancer_arn = aws_alb.main.id
+  port              = "8500"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.consul.arn
   }
 }

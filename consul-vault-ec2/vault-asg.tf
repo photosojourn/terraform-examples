@@ -32,7 +32,7 @@ module "vault-asg" {
   asg_name                  = "vault-asg"
   vpc_zone_identifier       = module.vpc.private_subnets
   health_check_type         = "EC2"
-  min_size                  = 3
+  min_size                  = 0
   max_size                  = 3
   desired_capacity          = 3
   wait_for_capacity_timeout = 0
