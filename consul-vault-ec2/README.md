@@ -14,5 +14,6 @@ This project has the following Ansible Roles:
 1. Before running TF, scale the Vault servers down to 0 in the TF Code
 2. Deploy TF stack
 3. Scale Vault back up and re run TF
-4. Logon to a Vault box and run `vault operator init -recovery-shares=1 -recovery-threshold=1`
-5. Restart other Vault servers. 
+4. Logon to a Vault box and run `export VAULT_ADDR=<host_ip:8200>`
+5. Then run `vault operator init -recovery-shares=1 -recovery-threshold=1`
+6. Restart other Vault servers.
